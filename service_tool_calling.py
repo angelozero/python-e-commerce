@@ -1,6 +1,3 @@
-import re
-import inspect
-
 import os
 from dotenv import load_dotenv
 from langchain.messages import HumanMessage, SystemMessage, ToolMessage
@@ -9,44 +6,12 @@ from langchain.chat_models import init_chat_model
 from langchain.embeddings import init_embeddings
 from langsmith import traceable
 
+from factory import get_chat_model
+
 # Load environment variables from .env file
 load_dotenv()
 
-# Configuration constants retrieved from environment
-MODEL_NAME = os.getenv("MODEL_NAME")
-API_KEY = os.getenv("API_KEY")
-BASE_URL = os.getenv("BASE_URL")
 MAX_ITERATIONS = int(os.getenv("MAX_ITERATIONS"))
-
-
-def get_chat_model():
-    """
-    Initializes and returns the Chat Model (LLM) instance.
-    Uses LiteLLM proxy via OpenAI-compatible interface.
-    """
-    return init_chat_model(
-        model=MODEL_NAME,
-        model_provider="openai",
-        api_key=API_KEY,
-        base_url=BASE_URL,
-        temperature=0,
-    )
-
-
-def get_embeddings():
-    """
-    Initializes and returns the Embeddings instance.
-    Configured to handle float encoding format for Ollama compatibility.
-    """
-    return init_embeddings(
-        model=MODEL_NAME,
-        provider="openai",
-        api_key=API_KEY,
-        base_url=BASE_URL,
-        # Force float encoding to avoid LiteLLM/Ollama base64 errors
-        model_kwargs={"encoding_format": "float"},
-    )
-
 
 @tool
 def get_product_price(product: str) -> float:
